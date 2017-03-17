@@ -1,0 +1,15 @@
+{
+  "name": "baocaothuctap",
+  "version": "1.0.0",
+  "description": "bao cao thuc tap ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u0016https://github.com/legeta/demochat.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
