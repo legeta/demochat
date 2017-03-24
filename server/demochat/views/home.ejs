@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Socket.io</title>
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      $(document).ready(() => {
+        let socket = io.connect();
+        let des = null;
+
+        $('#btn-signup').click(() => {
+          let username = $('#txt-username').val();
+          socket.emit('CLIENT_SIGN_UP', username);
+        });
+
+        socket.on('SERVER_ACCEPT_USERNAME', username => {
+          alert('username cua ban la: '+username);
+          $('#div-signup').hide();
+        });
+
+        socket.on('SERVER_REJECT_USERNAME', () => {
+          alert('username bị trùng ');
+        });
+
+        socket.on('NEW_USER_CONNECT', username => {
+          $('#ul-username').append(`<li id="user-${username}">${username}</li>`);
+        });
+
+        socket.on('USER_DISCONNECTED', username => {
+          let id = `#user-${username}`;
+          console.log(id);
+          $(id).remove();
+        });
+
+        socket.on('LIST_ONLINE_USER', arrUsername => {
+          for (var i = 0; i < arrUsername.length; i++) {
+            $('#ul-username').append(`<li> ${arrUsername[i]}`);
+          }
+        });
+
+        $('#btn-send').click(() => {
+          let msg = $('#txt-message').val();
+          socket.emit('CLIENT_SEND_MESSAGE', {des,msg});
+          $('#ul-message').append(`<li>: ${msg}</li>`);
+        });
+
+        socket.on('RECEIVE_NEW_MESSAGE', mess => {
+          // console.log(mess);
+          $('#ul-message').append(`<li>${mess}</li>`);
+        });
+
+        socket.on('ERROR_USER', () => {
+          alert('Không có user');
+        });
+
+        $('#ul-username').on('click', 'li', function(){
+          des = $(this).html();
+          $('#ul-username li').removeClass('active');
+          $(this).addClass('active');
+        });
+
+      });
+    </script>
+    <style>
+      #ul-message {
+        background-color: inherit;
+      }
+      .active{
+        color: #C14F56;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="div-signup">
+      <input type="text" placeholder="Username" id="txt-username">
+      <button id="btn-signup">Sign up</button>
+      <br><br>
+    </div>
+
+    <div id="div-chat">
+
+      <input type="text" placeholder="Message" id="txt-message">
+      <br><br>
+      <button id="btn-send">Send</button>
+      <br><br>
+    </div>
+
+    <ul id="ul-message">
+    </ul>
+    <ul id="ul-username">
+    </ul>
+  </body>
+</html>
