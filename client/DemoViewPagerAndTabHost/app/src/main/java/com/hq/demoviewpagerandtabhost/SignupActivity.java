@@ -1,5 +1,6 @@
 package com.hq.demoviewpagerandtabhost;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -40,6 +41,7 @@ public class SignupActivity extends AppCompatActivity {
         newusername = (EditText) findViewById(R.id.newusername);
         newpassword = (EditText) findViewById(R.id.newpassword);
         confpassword = (EditText) findViewById(R.id.confpassword);
+        btnSignup = (Button) findViewById(R.id.btnSignup);
 
         List<String> list = new ArrayList<>();
         list.add("Male");
@@ -60,5 +62,11 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
+        btnSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SignupActivity.this, "Sign Up Success", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
