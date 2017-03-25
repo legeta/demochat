@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/activity_changeprofile"
+    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/fnamechange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="First name" />
+
+        <EditText
+            android:id="@+id/lnamechange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Last name" />
+
+        <EditText
+            android:id="@+id/agechange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Age" />
+
+        <Spinner
+            android:id="@+id/genderchange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="Gender"/>
+
+        <EditText
+            android:id="@+id/phonechange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mobile phone" />
+
+        <EditText
+            android:id="@+id/newusernamechange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username" />
+
+        <EditText
+            android:id="@+id/passwordtoconf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your password to confirm" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnProfilechange"
+            android:text="Change" />
+    </LinearLayout>
+</RelativeLayout>
