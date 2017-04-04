@@ -12,12 +12,24 @@
 
         $('#btn-signup').click(() => {
           let username = $('#txt-username').val();
-          socket.emit('CLIENT_SIGN_UP', username);
+          let password = $('#txt-password').val();
+          let phone = $('#txt-phone').val();
+          socket.emit('CLIENT_SIGN_UP', {username,password,phone});
+        });
+
+        $('#btn-signin').click(() => {
+          let username = $('#txt-Signinusername').val();
+          let password = $('#txt-Signinpassword').val();
+          socket.emit('CLIENT_SIGN_IN', {username,password});
         });
 
         socket.on('SERVER_ACCEPT_USERNAME', username => {
           alert('username cua ban la: '+username);
           $('#div-signup').hide();
+        });
+
+        socket.on('SERVER_RETURN_ERR', err => {
+          alert('Loi: '+err);
         });
 
         socket.on('SERVER_REJECT_USERNAME', () => {
@@ -74,8 +86,17 @@
   </head>
   <body>
     <div id="div-signup">
-      <input type="text" placeholder="Username" id="txt-username">
+      <input type="text" placeholder="Usernamedk" id="txt-username">
+      <input type="password" placeholder="passworddk" id="txt-password">
+      <input type="text" placeholder="Phone" id="txt-phone">
       <button id="btn-signup">Sign up</button>
+      <br><br>
+    </div>
+
+    <div id="div-signin">
+      <input type="text" placeholder="Username" id="txt-Signinusername">
+      <input type="password" placeholder="password" id="txt-Signinpassword">
+      <button id="btn-signin">Sign In</button>
       <br><br>
     </div>
 

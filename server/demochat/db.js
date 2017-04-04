@@ -13,12 +13,12 @@ var config = {
 
 var pool = new pg.Pool(config);
 
-function query(sql, data, cb){
+function query(sql, data, cb) {
   pool.connect((err, client, done) => {
-    if(err) return cb(err);
+    if (err) return cb(err);
     done();
     client.query(sql, data, (err, result) => {
-      if(err) return cb(err)
+      if (err) return cb(err)
       //console.log(result.rows);
       cb(undefined, result);
     });
@@ -34,14 +34,14 @@ let insertUser = (username, password, phone, cb) => {
 let checkUser = (username, password, cb) => {
   let sql = `SELECT * FROM "User" WHERE username = $1`;
   query(sql, [username], (err, result) => {
-    if(err) return cb(err);
-    if(result.rowCount != 1) return cb(new Error('User khong ton tai'));
-    if(password != decrypt(result.rows[0].password)) {
+    if (err) return cb(err);
+    if (result.rowCount != 1) return cb(new Error('User khong ton tai'));
+    if (password != decrypt(result.rows[0].password)) {
       return cb(new Error('Kiem tra username password'));
     }
     cb(undefined);
   });
-}
+};
 
 // insertUser(`j'jj'j`, '123', '09372483', (err, res) => {
 //   console.log(err);
@@ -53,4 +53,4 @@ let checkUser = (username, password, cb) => {
 //   console.log('Dang nhap thanh cong');
 // });
 
-module.exports = {checkUser, insertUser};
+module.exports = { checkUser, insertUser };
