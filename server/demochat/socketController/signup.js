@@ -1,6 +1,6 @@
 let arrUsername = require('./arrUsername.js');
 let arrSocket = require('./arrSocket.js');
-let { checkUser, insertUser } = require('../db.js');
+let { checkUser, insertUser, checkSignup } = require('../db.js');
 
 let getSignup = (io, socket) => {
   return (object) => {
@@ -11,18 +11,22 @@ let getSignup = (io, socket) => {
     console.log('passdk: ' + password);
     console.log('phonedk: ' + phone);
 
-    checkUser(username, password, error => {
+    checkSignup(username, error => {
       if (error) {
+        let loiDk = ''+error;
+        console.log(loiDk);
+        socket.emit('SERVER_SIGNUP_ERR', loiDk);
+      } else {
         insertUser(username, password, phone, (err, result) => {
-          if (err) return socket.emit('SERVER_ERR', err);
+          let loiInsert = err + '';
+          console.log('LoiIn: ' + loiInsert);
+          if (err) return socket.emit('SERVER_ERR', loiInsert);
           if (result.rowCount != 1) return socket.emit('SERVER_RETURN_ERR', 'Không thành công');
           socket.emit('SERVER_INSERT_OK', { username, password });
+          console.log('New userdk: ' + username + ' pass:' + password);
         });
-        console.log('New userdk: ' + username);
         // console.log('New user: ' + username);
         // console.log('New user: '+ password);
-      } else {
-        socket.emit('SERVER_SIGNUP_ERR', error);
       }
     });
   };

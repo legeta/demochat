@@ -11,7 +11,9 @@ let getSignin = (io, socket) => {
 
     checkUser(username, password, err => {
       if (err) {
-        socket.emit('SERVER_RETURN_ERR', err);
+        let error = err + ' ';
+        console.log(error);
+        socket.emit('SERVER_RETURN_ERR', error);
       } else {
         if (arrUsername.indexOf(username) === -1) {
           arrUsername.push(username);
@@ -27,6 +29,7 @@ let getSignin = (io, socket) => {
         // console.log('New user: '+ password);
       }
     });
+    socket.emit('LIST_ONLINE_USER', { danhsach: arrUsername });
   };
 };
 

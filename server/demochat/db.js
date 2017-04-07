@@ -35,14 +35,22 @@ let checkUser = (username, password, cb) => {
   let sql = `SELECT * FROM "User" WHERE username = $1`;
   query(sql, [username], (err, result) => {
     if (err) return cb(err);
-    if (result.rowCount != 1) return cb(new Error('User khong ton tai'));
+    if (result.rowCount != 1) return cb(new Error('Username does not exist'));
     if (password != decrypt(result.rows[0].password)) {
-      return cb(new Error('Kiem tra username password'));
+      return cb(new Error('Check your username or password'));
     }
     cb(undefined);
   });
 };
 
+let checkSignup = (username, cb) => {
+  let sql = `SELECT * FROM "User" WHERE username = $1`;
+  query(sql, [username], (err, result) => {
+    if (err) return cb(err);
+    if (result.rowCount == 1) return cb(new Error('Username already exists'));
+    cb(undefined);
+  });
+};
 // insertUser(`j'jj'j`, '123', '09372483', (err, res) => {
 //   console.log(err);
 //   console.log(res);
@@ -53,4 +61,4 @@ let checkUser = (username, password, cb) => {
 //   console.log('Dang nhap thanh cong');
 // });
 
-module.exports = { checkUser, insertUser };
+module.exports = { checkUser, insertUser, checkSignup };
