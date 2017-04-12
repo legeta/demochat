@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -31,8 +33,10 @@ import io.socket.emitter.Emitter;
 public class MFragment3 extends Fragment {
 
     ListView listView;
-    ArrayList<String> mangUsernames;
+//    ArrayList<String> mangUsernames;
     private Socket mSocket;
+    private Button btnRefesh;
+    private int count = 0;
 
     @Nullable
     @Override
@@ -42,47 +46,43 @@ public class MFragment3 extends Fragment {
         mSocket = ms.getSocket();
         View view = inflater.inflate(R.layout.activity_online, null);
         listView = (ListView) view.findViewById(R.id.lvonline);
-
-        mangUsernames = new ArrayList<String>();
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, mangUsernames);
-//        mangUsernames.add("hahh");
-//        mangUsernames.add("sss");
-
-        mSocket.connect();
-//        mSocket.on("LIST_ONLINE_USER", new Emitter.Listener() {
-//            @Override
-//            public void call(final Object... args) {
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        JSONObject data = (JSONObject) args[0];
-//                        JSONArray manguser;
-//                        try {
-//                            manguser = data.getJSONArray("danhsach");
-//                            for (int i = 0; i < manguser.length(); i++){
-//                                mangUsernames.add(manguser.get(i).toString());
-//                                Log.d("hqUser_mang",manguser.get(i).toString());
-//                            }
-//                        }
-//                        catch (JSONException e){
-//                            return;
-//                        }
-//
-//                    }
-//                });
-//            }
-//
-//        });
+        btnRefesh = (Button) view.findViewById(R.id.refeshOnline);
 
         Intent intent = getActivity().getIntent();
+        final String username = intent.getStringExtra("username");
+        Log.d("hquserM2",username);
+
+//        mangUsernames = new ArrayList<String>();
+        final List<DBUser> mangUsernames = new ArrayList<DBUser>();
+
+//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_dropdown_item_1line, mangUsernames);
+
+        mSocket.on("LIST_ONLINE_USER", new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String chuoi =  args[0].toString();
+                        Log.d("hqusermangfriend", chuoi);
+                        String mang[] = chuoi.split(",");
+//                        Log.d("hquserchuoifriend",)
+                        for (int i = 0; i < mang.length; i++) {
+                            mangUsernames.add(new DBUser(mang[i].toString().trim()));
+                        }
+                    }
+                });
+            }
+        });
+        listView.setAdapter(new CustomListAdapter(this.getContext(), mangUsernames));
+
+//        Intent intent = getActivity().getIntent();
 //        final String username = intent.getStringExtra("manguseronline");
 //        ArrayList<String> manguseronl = intent.getStringArrayListExtra("manguseronline");
-        mangUsernames = intent.getStringArrayListExtra("manguseronline");
+
         Log.d("hquseronline", String.valueOf(mangUsernames));
 
-        listView.setAdapter(arrayAdapter);
+//        listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -95,6 +95,45 @@ public class MFragment3 extends Fragment {
                 Toast.makeText(getActivity(), ten, Toast.LENGTH_SHORT).show();
             }
         });
+
+        JSONObject data = null;
+        try {
+            data = new JSONObject("{\"userSoc\": \"" + username + "\"}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("hqusercheckfriend", String.valueOf(data));
+        final JSONObject finalData = data;
+        btnRefesh.setOnClickListener(new View.OnClickListener()
+        {
+
+
+            @Override
+            public void onClick(View v)
+            {
+                mSocket.emit("CHECK_ONLINE", finalData);
+
+                mSocket.on("LIST_ONLINE_USER", new Emitter.Listener() {
+                    @Override
+                    public void call(final Object... args) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String chuoi =  args[0].toString();
+                                Log.d("hqusermangfriend", chuoi);
+                                String mang[] = chuoi.split(",");
+//                        Log.d("hquserchuoifriend",)
+                                for (int i = 0; i < mang.length; i++) {
+                                    mangUsernames.set(i, new DBUser(mang[i].toString().trim()));
+                                }
+                            }
+                        });
+                    }
+                });
+                listView.setAdapter(new CustomListAdapter(getView().getContext(), mangUsernames));
+            }
+        });
+
         return view;
     }
 

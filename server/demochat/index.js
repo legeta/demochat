@@ -43,9 +43,20 @@ io.on('connection', socket => {
   socket.on('UPDATE_PASS', require('./socketController/updatepass.js')(io, socket));
   socket.on('UPDATE_PROFILE', require('./socketController/updateprofile.js')(io, socket));
   socket.on('CHECK_FRIENDS', require('./socketController/checkAllfriends.js')(io, socket));
-  // socket.on('CHECK_PROFILE', require('./socketController/checkAllProfile.js')(io, socket));
+  socket.on('CHECK_PROFILE', require('./socketController/checkAllProfile.js')(io, socket));
+  socket.on('DELETE_FRIENDS', require('./socketController/deletefriends.js')(io, socket));
+  // socket.on('CHECK_ONLINE', require('./socketController/listonline.js')(io, socket));
 
-  socket.emit('LIST_ONLINE_USER', { arrUsername });
+  let mangOnline = '';
+  for (var i = 0; i < arrUsername.length; i++) {
+    if (mangOnline !== '') {
+      mangOnline = mangOnline + ',' + arrUsername[i];
+    }
+    else {
+      mangOnline = mangOnline + arrUsername[i];
+    }
+  }
+  socket.emit('LIST_ONLINE_USER', mangOnline);
   socket.on('disconnect', () => {
     io.emit('USER_DISCONNECTED', socket.username);
     console.log(arrUsername);

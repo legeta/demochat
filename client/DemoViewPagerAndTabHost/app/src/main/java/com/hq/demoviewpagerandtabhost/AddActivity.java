@@ -75,7 +75,7 @@ public class AddActivity extends AppCompatActivity {
                                 } catch (JSONException e) {
                                     return;
                                 }
-                                Toast.makeText(AddActivity.this, "You and " + friend + " are firend now", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AddActivity.this, "You and " + friend + " are friend now", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }

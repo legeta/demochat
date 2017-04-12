@@ -42,6 +42,11 @@ public class ChangeprofileActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         final String username = intent.getStringExtra("username");
+        final String firstname = intent.getStringExtra("firstname");
+        final String lastname = intent.getStringExtra("lastname");
+        final String age = intent.getStringExtra("age");
+        final String phone = intent.getStringExtra("phone");
+        final String gender = intent.getStringExtra("gender");
         Log.d("hquserpasschange", username);
 
         spnGenderchange = (Spinner) findViewById(R.id.genderchange);
@@ -51,11 +56,20 @@ public class ChangeprofileActivity extends AppCompatActivity {
         phonechange = (EditText) findViewById(R.id.phonechange);
         passwordtoconf = (EditText) findViewById(R.id.passwordtoconf);
         btnProfilechange = (Button) findViewById(R.id.btnProfilechange);
+
+
         final String[] genderchange = {null};
 
         List<String> list = new ArrayList<>();
         list.add("Male");
         list.add("Female");
+
+//        spnGenderchange.setLabelFor(1);
+        fnamechange.setText(firstname);
+        lnamechange.setText(lastname);
+        agechange.setText(age);
+        phonechange.setText(phone);
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
@@ -102,6 +116,7 @@ public class ChangeprofileActivity extends AppCompatActivity {
                                     String updateok;
                                     updateok = args[0].toString();
                                     Toast.makeText(ChangeprofileActivity.this, "" + updateok, Toast.LENGTH_SHORT).show();
+                                    finish();
                                 }
                             });
                         }

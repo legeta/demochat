@@ -38,7 +38,7 @@ public class MFragment2 extends Fragment {
 
 //        String mang [] = new String[]{"Me", "Add"};
         final ArrayList<String> mang = new ArrayList<String>();
-        mang.add("Me");
+        mang.add("About me");
         mang.add("Add friends");
         mang.add("Sign out");
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),

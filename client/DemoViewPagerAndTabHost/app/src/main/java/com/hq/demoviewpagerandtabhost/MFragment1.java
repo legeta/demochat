@@ -1,10 +1,12 @@
 package com.hq.demoviewpagerandtabhost;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,7 +110,7 @@ public class MFragment1 extends Fragment {
                                 String mang[] = chuoi.split(",");
 //                        Log.d("hquserchuoifriend",)
                                 for (int i = 0; i < mang.length; i++) {
-                                    mangUser.add(new DBUser(mang[i].toString().trim()));
+                                    mangUser.set(i, new DBUser(mang[i].toString().trim()));
                                 }
                             }
                         });
@@ -117,6 +119,8 @@ public class MFragment1 extends Fragment {
                 listView.setAdapter(new CustomListAdapter(getView().getContext(), mangUser));
             }
         });
+
+
 
         mSocket.on("RECEIVE_NEW_MESSAGE", new Emitter.Listener() {
             @Override
@@ -153,23 +157,73 @@ public class MFragment1 extends Fragment {
                 Toast.makeText(getActivity(), ten, Toast.LENGTH_SHORT).show();
             }
         });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                b.setTitle("DELETE FRIEND");
+                final String thisfriend = mangUser.get(position).getUsername();
+                b.setMessage("Are you sure you want to delete "+thisfriend+"?");
+                b.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        JSONObject userdelete = null;
+                        try {
+                            userdelete = new JSONObject("{\"username1\": \"" + username + "\", \"username2\": \"" + thisfriend + "\"}");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("hqusercheckfriend", String.valueOf(userdelete));
+                        mSocket.emit("DELETE_FRIENDS", userdelete);
+                        mSocket.on("SERVER_DELETE_FRIEND", new Emitter.Listener() {
+                            @Override
+                            public void call(final Object... args) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        JSONObject data = (JSONObject) args[0];
+                                        String user;
+                                        try {
+                                            user = data.getString("username2");
+                                            Log.d("hqUsernamedelete", user);
+                                        } catch (JSONException e) {
+                                            return;
+                                        }
+                                        Toast.makeText(getActivity(), "You and " + user + " aren't friend now", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                        mSocket.on("SERVER_ERR", new Emitter.Listener() {
+                            @Override
+                            public void call(final Object... args) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String err;
+                                        err = args[0].toString();
+                                        Toast.makeText(getActivity(), "Error: " + err, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                b.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.cancel();
+                    }
+                });
+                b.create().show();
+                return false;
+            }
+        });
+
+
         return view;
-
-
-    }
-
-    private List<DBUser> getListData() {
-        List<DBUser> list = new ArrayList<DBUser>();
-        DBUser vietnam = new DBUser("aaaa", "vn", count);
-        DBUser usa = new DBUser("bbbb", "us", 320000000);
-        DBUser russia = new DBUser("cccc", "ru", 142000000);
-
-
-        list.add(vietnam);
-        list.add(usa);
-        list.add(russia);
-
-        return list;
     }
 
     public void ChuyenTrang(String ten) {

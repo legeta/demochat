@@ -50,8 +50,22 @@ public class AboutmeActivity extends AppCompatActivity {
         final String username = intent.getStringExtra("username");
         Log.d("hquserM2",username);
 
-        mSocket.emit("CHECK_PROFILE", username);
+        JSONObject data = null;
+        try {
+            data = new JSONObject("{\"userSoc\": \"" + username + "\"}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+        mSocket.emit("CHECK_PROFILE", data);
+
+
+        final String[] firstname = new String[1];
+        final String[] lastname = new String[1];
+        final String[] age = new String[1];
+        final String[] phone = new String[1];
+        final String password;
+        final String[] gender = new String[1];
 
         mSocket.on("SERVER_RETURN_PROFILE", new Emitter.Listener() {
             @Override
@@ -61,11 +75,17 @@ public class AboutmeActivity extends AppCompatActivity {
                     public void run() {
                         JSONObject data = (JSONObject) args[0];
                         try {
-                            myfname.setText(data.getString("firstname").toString());
-                            mylname.setText(data.getString("lastname").toString());
-                            myage.setText(data.getString("age").toString());
-                            myphone.setText(data.getString("phone").toString());
-                            mygender.setText(data.getString("gender").toString());
+                            firstname[0] = data.getString("firstname").toString();
+                            lastname[0] = data.getString("lastname").toString();
+                            age[0] = data.getString("age").toString();
+                            phone[0] = data.getString("phone").toString();
+                            gender[0] = data.getString("gender").toString();
+                            myusername.setText("Username: "+username);
+                            myfname.setText("First name: "+ firstname[0]);
+                            mylname.setText("Last name: "+ lastname[0]);
+                            myage.setText("Age: "+ age[0]);
+                            myphone.setText("Mobile phone: "+ phone[0]);
+                            mygender.setText("Gender: "+ gender[0]);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -81,6 +101,11 @@ public class AboutmeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(AboutmeActivity.this, ChangeprofileActivity.class);
                 intent.putExtra("username",username);
+                intent.putExtra("firstname", firstname[0]);
+                intent.putExtra("lastname", lastname[0]);
+                intent.putExtra("age", age[0]);
+                intent.putExtra("phone", phone[0]);
+                intent.putExtra("gender", phone[0]);
                 startActivity(intent);
             }
         });

@@ -113,4 +113,11 @@ function checkAllProfile(username, cb) {
   });
 }
 
-module.exports = { checkUser, insertUser, checkSignup, insertFriends, checkUserExist, updatePass, checkUserPass, checkAllFriends, updateProfile, checkAllProfile };
+function deleteFriends(username1, username2, cb) {
+  let sql = `DELETE FROM public."Friends" WHERE (username1 = $1 AND username2 = $2) OR (username1 = $2 AND username2 = $1)`;
+  query(sql, [username1, username2], (err, result) => {
+    cb(undefined, result);
+  });
+}
+
+module.exports = { checkUser, insertUser, checkSignup, insertFriends, checkUserExist, updatePass, checkUserPass, checkAllFriends, updateProfile, checkAllProfile, deleteFriends };

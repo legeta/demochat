@@ -2,7 +2,7 @@ let arrUsername = require('./arrUsername.js');
 let arrSocket = require('./arrSocket.js');
 let { checkAllProfile } = require('../db.js');
 
-let getUpdatePass = (io, socket) => {
+let getCheckProfile = (io, socket) => {
   return (object) => {
     let username = object.userSoc;
     console.log('user: ' + username);
@@ -14,6 +14,7 @@ let getUpdatePass = (io, socket) => {
       let age = result.rows[0].age;
       let gender = result.rows[0].gender;
       let phone = result.rows[0].phone;
+      // let mangProfile = firstname + '' + lastname + '' + age + '' + gender + '' + phone;
       socket.emit('SERVER_RETURN_PROFILE', { firstname, lastname, age, gender, phone });
     });
       // for (var i = 0; i < result.length; i++) {
@@ -21,4 +22,4 @@ let getUpdatePass = (io, socket) => {
       // }
   };
 };
-module.exports = getUpdatePass;
+module.exports = getCheckProfile;

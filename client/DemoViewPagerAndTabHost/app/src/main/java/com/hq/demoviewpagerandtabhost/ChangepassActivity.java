@@ -69,6 +69,7 @@ public class ChangepassActivity extends AppCompatActivity {
                                     String updateok;
                                     updateok = args[0].toString();
                                     Toast.makeText(ChangepassActivity.this, "" + updateok, Toast.LENGTH_SHORT).show();
+                                    finish();
                                 }
                             });
                         }

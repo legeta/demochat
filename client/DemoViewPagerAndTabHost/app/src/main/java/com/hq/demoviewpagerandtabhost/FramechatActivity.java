@@ -66,7 +66,7 @@ public class FramechatActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             return;
                         }
-                        txtFramechat.setText(txtFramechat.getText()+"\n"+message);
+                        txtFramechat.setText(txtFramechat.getText()+"\n"+usersend.toString()+": "+message);
                     }
                 });
             }

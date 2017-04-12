@@ -2,7 +2,7 @@ let arrUsername = require('./arrUsername.js');
 let arrSocket = require('./arrSocket.js');
 let { checkAllFriends } = require('../db.js');
 
-let getUpdatePass = (io, socket) => {
+let getCheckFriends = (io, socket) => {
   return (object) => {
     let username = object.userSoc;
     console.log('user: ' + username);
@@ -17,13 +17,22 @@ let getUpdatePass = (io, socket) => {
         }
         else {
           // mangFriends.push(result.rows[i].username1);
-          mangFriends = mangFriends + ','+result.rows[i].username1;
+          if (mangFriends !== '') {
+            mangFriends = mangFriends + ','+result.rows[i].username1;
+          }else {
+            mangFriends = mangFriends + result.rows[i].username1;
+          }
         }
         if (result.rows[i].username2 === username) {
         }
         else {
           // mangFriends.push(result.rows[i].username2);
-          mangFriends = mangFriends + ','+result.rows[i].username2;
+          if (mangFriends !== '') {
+            mangFriends = mangFriends + ','+result.rows[i].username2;
+          }
+          else {
+            mangFriends = mangFriends + result.rows[i].username2;
+          }
         }
       }
       socket.emit('SERVER_RETURN_FRIENDS', mangFriends);
@@ -35,4 +44,4 @@ let getUpdatePass = (io, socket) => {
       // }
   };
 };
-module.exports = getUpdatePass;
+module.exports = getCheckFriends;

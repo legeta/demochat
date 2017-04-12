@@ -27,37 +27,37 @@
             android:id="@+id/myusername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username" />
+            android:hint="Username: " />
 
         <TextView
             android:id="@+id/myfname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="First name" />
+            android:hint="First name: " />
 
         <TextView
             android:id="@+id/mylname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Last name" />
+            android:hint="Last name: " />
 
         <TextView
             android:id="@+id/myage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Age" />
+            android:hint="Age: " />
 
         <TextView
             android:id="@+id/mygender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Gender" />
+            android:hint="Gender: " />
 
         <TextView
             android:id="@+id/myphone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mobile phone" />
+            android:hint="Mobile phone: " />
     </LinearLayout>
 
     <Button
