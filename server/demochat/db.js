@@ -3,7 +3,7 @@ let {decrypt, encrypt} = require('./crypto.js');
 
 var config = {
   user: 'postgres',
-  database: 'Node1912',
+  database: 'ChatDemo',
   password: '123456',
   host: 'localhost',
   port: 5432,
@@ -25,10 +25,10 @@ function query(sql, data, cb) {
   });
 }
 
-let insertUser = (username, password, phone, cb) => {
-  let sql = `INSERT INTO public."User"(username, "password", phone)
-	VALUES ($1, $2, $3)`;
-  query(sql, [username, encrypt(password), phone], cb);
+let insertUser = (username, password, firstname, lastname, age, gender, phone, cb) => {
+  let sql = `INSERT INTO public."User"(username, "password", firstname, lastname, age, gender, phone)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)`;
+  query(sql, [username, encrypt(password), firstname, lastname, age, gender, phone], cb);
 }
 
 let checkUser = (username, password, cb) => {
@@ -51,14 +51,66 @@ let checkSignup = (username, cb) => {
     cb(undefined);
   });
 };
-// insertUser(`j'jj'j`, '123', '09372483', (err, res) => {
-//   console.log(err);
-//   console.log(res);
-// })
 
-// checkUser('Pho', '12223', err => {
-//   if(err) return console.log(err);
-//   console.log('Dang nhap thanh cong');
-// });
+let checkUserExist = (username, cb) => {
+  let sql = `SELECT * FROM "User" WHERE username = $1`;
+  query(sql, [username], (err, result) => {
+    if (err) return cb(err);
+    if (result.rowCount == 1) return cb(new Error('Username already exists'));
+    cb(undefined);
+  });
+};
 
-module.exports = { checkUser, insertUser, checkSignup };
+let checkUserPass = (username, password, cb) => {
+  let sql = `SELECT * FROM "User" WHERE username = $1`;
+  query(sql, [username], (err, result) => {
+    if (err) return cb(err);
+    if (password != decrypt(result.rows[0].password)) {
+      return cb(new Error('Check your password'));
+    }
+    cb(undefined);
+  });
+};
+
+let insertFriends = (username1, username2, cb) => {
+  let sql = `INSERT INTO public."Friends"(username1, username2)
+	VALUES ($1, $2)`;
+  query(sql, [username1, username2], cb);
+}
+
+let updatePass = (username, password , cb) => {
+  let sql = `UPDATE public."User" SET password = $1 WHERE username = $2`;
+  query(sql, [encrypt(password), username], cb);
+}
+
+let updateProfile = (username, firstname, lastname, age, gender, phone, cb) => {
+  let sql = `UPDATE public."User"
+	SET firstname=$1, lastname=$2, age=$3, gender=$4, phone=$5
+	WHERE username=$6;`;
+  query(sql, [firstname, lastname, age, gender, phone, username], cb);
+}
+
+function checkAllFriends(username, cb) {
+  let sql = `SELECT * FROM "Friends" WHERE username1 = $1 OR username2 = $1`;
+  query(sql, [username], (err, result) => {
+    cb(undefined, result);
+  });
+  // console.log(query(sql, [username]) + '');
+  //  => {
+  //   if (err) return cb(err);
+  //   if (result.rowCount == 0) return cb(undefined);
+  //   // console.log(result.rows[0].username2.toString() + 'result query');
+  //   console.log(result.toString() + 'result query');
+  //   // return (result);
+  //   // cb(undefined);
+  // });
+};
+
+function checkAllProfile(username, cb) {
+  let sql = `SELECT * FROM "User" WHERE username = $1`;
+  query(sql, [username], (err, result) => {
+    cb(undefined, result);
+  });
+}
+
+module.exports = { checkUser, insertUser, checkSignup, insertFriends, checkUserExist, updatePass, checkUserPass, checkAllFriends, updateProfile, checkAllProfile };

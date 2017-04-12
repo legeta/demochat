@@ -19,9 +19,10 @@ let getSignin = (io, socket) => {
           arrUsername.push(username);
           arrSocket.push(socket);
           socket.username = username;
-
           io.emit('NEW_USER_CONNECT', username);
           socket.emit('SERVER_ACCEPT_USERNAME', username);
+          console.log(arrUsername);
+          socket.emit('LIST_ONLINE_USER', { arrUsername });
         } else {
           socket.emit('SERVER_REJECT_USERNAME');
         }
@@ -29,7 +30,8 @@ let getSignin = (io, socket) => {
         // console.log('New user: '+ password);
       }
     });
-    socket.emit('LIST_ONLINE_USER', { danhsach: arrUsername });
+    // socket.emit('LIST_ONLINE_USER', { danhsach: arrUsername });
+    console.log(arrUsername);
   };
 };
 

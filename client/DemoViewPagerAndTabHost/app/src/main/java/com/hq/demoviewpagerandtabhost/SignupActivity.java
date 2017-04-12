@@ -38,32 +38,11 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        MSocket ms = new MSocket();
+//        MSocket ms = new MSocket();
+        MSocket ms = (MSocket) getApplication();
         mSocket = ms.getSocket();
 
         final ArrayList<String> mangUsernames = new ArrayList<String>();
-//        mSocket.on("SERVER_INSERT_OK", new Emitter.Listener() {
-//            @Override
-//            public void call(final Object... args) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        JSONObject data = (JSONObject) args[0];
-//                        JSONArray manguser;
-//                        try {
-//                            manguser = data.getJSONArray("danhsach");
-//                            for (int i = 0; i < manguser.length(); i++){
-//                                mangUsernames.add(manguser.get(i).toString());
-//                                Log.d("hqInsert",manguser.getString(i));
-//                            }
-//                        }
-//                        catch (JSONException e){
-//                            return;
-//                        }
-//                    }
-//                });
-//            }
-//        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSignup);
         setSupportActionBar(toolbar);
@@ -118,7 +97,7 @@ public class SignupActivity extends AppCompatActivity {
                 if (password.equals(confirmpass)) {
                     JSONObject data = null;
                     try {
-                        data = new JSONObject("{\"username\": \"" + username + "\", \"password\": \"" + password + "\", \"phone\": \"" + phone + "\"}");
+                        data = new JSONObject("{\"username\": \"" + username + "\", \"password\": \"" + password + "\", \"phone\": \"" + phone + "\", \"firstname\": \"" + firstname + "\", \"lastname\": \"" + lastname + "\", \"age\": \"" + age + "\", \"gender\": \"" + gender[0] + "\"}");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -157,6 +136,33 @@ public class SignupActivity extends AppCompatActivity {
                                     String err;
                                     err = args[0].toString();
                                     Toast.makeText(SignupActivity.this, "Error: "+err, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                    mSocket.on("SERVER_ERR", new Emitter.Listener() {
+                        @Override
+                        public void call(final Object... args) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String err;
+                                    err = args[0].toString();
+                                    Toast.makeText(SignupActivity.this, "Error: " + err, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+
+                    mSocket.on("SERVER_RETURN_ERR", new Emitter.Listener() {
+                        @Override
+                        public void call(final Object... args) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String err;
+                                    err = args[0].toString();
+                                    Toast.makeText(SignupActivity.this, "Error: " + err, Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }

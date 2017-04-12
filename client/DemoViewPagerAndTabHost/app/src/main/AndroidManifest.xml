@@ -7,7 +7,8 @@
         android:icon="@mipmap/clogo"
         android:label="Chit Chat"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".MSocket">
         <activity android:name="com.hq.demoviewpagerandtabhost.SigninActivity">
 
             <intent-filter>

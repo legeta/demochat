@@ -18,18 +18,21 @@
             android:id="@+id/oldpassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             android:hint="Old password" />
 
         <EditText
             android:id="@+id/newpasswordchange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             android:hint="New password" />
 
         <EditText
             android:id="@+id/confnewpassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             android:hint="Confirm your new password" />
 
         <Button

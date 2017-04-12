@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -32,24 +33,14 @@ public class SigninActivity extends AppCompatActivity {
 
     private Socket mSocket;
 
-//    {
-//        try {
-//            mSocket = IO.socket("http://192.168.56.1:3000");
-//        } catch (URISyntaxException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public Socket getSocket() {
-//        return mSocket;
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        MSocket ms = new MSocket();
+//        MSocket ms = new MSocket();
+        MSocket ms = (MSocket) getApplication();
         mSocket = ms.getSocket();
         mSocket.connect();
 
@@ -78,7 +69,7 @@ public class SigninActivity extends AppCompatActivity {
                 }
                 Log.d("hquser", String.valueOf(data));
                 mSocket.emit("CLIENT_SIGN_IN", data);
-
+                final ArrayList<String> mangUsernames = new ArrayList<String>();
                 mSocket.on("SERVER_ACCEPT_USERNAME", new Emitter.Listener() {
                     @Override
                     public void call(final Object... args) {
@@ -88,14 +79,40 @@ public class SigninActivity extends AppCompatActivity {
                                 String usernamedk;
                                 usernamedk = args[0].toString();
                                 Toast.makeText(getApplicationContext(), "Your username: " + usernamedk, Toast.LENGTH_SHORT).show();
+                                mSocket.on("LIST_ONLINE_USER", new Emitter.Listener() {
+                                    @Override
+                                    public void call(final Object... args) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                JSONObject data = (JSONObject) args[0];
+                                                JSONArray manguser;
+                                                try {
+                                                    manguser = data.getJSONArray("danhsach");
+                                                    for (int i = 0; i < manguser.length(); i++){
+                                                        mangUsernames.add(manguser.get(i).toString());
+                                                        Log.d("hqUser_mang",manguser.get(i).toString());
+                                                    }
+                                                }
+                                                catch (JSONException e){
+                                                    return;
+                                                }
+
+                                            }
+                                        });
+                                    }
+
+                                });
                                 Intent intent = new Intent(SigninActivity.this, MainActivity.class);
-                                intent.putExtra("username", edtusername.getText());
+                                intent.putExtra("username", edtusername.getText().toString());
+                                intent.putExtra("manguseronline",mangUsernames);
                                 startActivity(intent);
                             }
                         });
                     }
 
                 });
+
 
                 mSocket.on("SERVER_RETURN_ERR", new Emitter.Listener() {
 
@@ -106,7 +123,7 @@ public class SigninActivity extends AppCompatActivity {
                             public void run() {
                                 String err;
                                 err = args[0].toString();
-                                Toast.makeText(getApplicationContext(), "Username or password is wrong", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), " "+err, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }

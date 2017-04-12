@@ -26,25 +26,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private Socket mSocket;
 
 
-    //    {
-//        try {
-//            mSocket = IO.socket("http://192.168.56.1:3000");
-//        } catch (URISyntaxException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public Socket getSocket() {
-//        return mSocket;
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MSocket ms = new MSocket();
-        mSocket = ms.getSocket();
+//        MSocket ms = new MSocket();
+//        MSocket ms = (MSocket) getApplication();
+//        mSocket = ms.getSocket();
 //        mSocket.connect();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

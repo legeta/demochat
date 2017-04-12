@@ -39,8 +39,13 @@ io.on('connection', socket => {
   console.log('Co nguoi ket noi');
   socket.on('CLIENT_SIGN_UP', require('./socketController/signup.js')(io, socket));
   socket.on('CLIENT_SIGN_IN', require('./socketController/signin.js')(io, socket));
+  socket.on('ADD_FRIENDS', require('./socketController/addfriends.js')(io, socket));
+  socket.on('UPDATE_PASS', require('./socketController/updatepass.js')(io, socket));
+  socket.on('UPDATE_PROFILE', require('./socketController/updateprofile.js')(io, socket));
+  socket.on('CHECK_FRIENDS', require('./socketController/checkAllfriends.js')(io, socket));
+  // socket.on('CHECK_PROFILE', require('./socketController/checkAllProfile.js')(io, socket));
 
-  socket.emit('LIST_ONLINE_USER', { danhsach: arrUsername });
+  socket.emit('LIST_ONLINE_USER', { arrUsername });
   socket.on('disconnect', () => {
     io.emit('USER_DISCONNECTED', socket.username);
     console.log(arrUsername);
@@ -50,10 +55,11 @@ io.on('connection', socket => {
   socket.on('CLIENT_SEND_MESSAGE', data => {
     let desSocket = arrSocket.find(soc => soc.username === data.des);
     if (desSocket) {
-      let mess = socket.username + ': ' + data.msg;
-      // let mess = data.msg;
+      // let mess = socket.username + ': ' + data.msg;
+      let mess = data.msg;
+      let usersend = data.des;
       console.log('mess_send:' + mess);
-      desSocket.emit('RECEIVE_NEW_MESSAGE', mess);
+      desSocket.emit('RECEIVE_NEW_MESSAGE', { mess, usersend });
     } else {
       socket.emit('ERROR_USER');
     }

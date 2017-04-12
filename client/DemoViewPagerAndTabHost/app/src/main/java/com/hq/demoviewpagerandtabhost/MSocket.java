@@ -10,13 +10,13 @@ import java.net.URISyntaxException;
  */
 
 public class MSocket extends Application {
-    public MSocket(){
-
-    }
+//    public MSocket(){
+//
+//    }
     public Socket MSocket;
     {
         try {
-            MSocket = IO.socket("http://192.168.56.1:3000");
+            MSocket = IO.socket(Constants.CHAT_SERVER_URL);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
