@@ -1,5 +1,6 @@
 package com.hq.demoviewpagerandtabhost;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import io.socket.emitter.Emitter;
 public class MFragment1 extends Fragment {
 
     private Socket mSocket;
+    private Button btnRefesh;
     private int count = 0;
     @Nullable
     @Override
@@ -38,33 +41,15 @@ public class MFragment1 extends Fragment {
         MSocket ms = (MSocket) getActivity().getApplication();
         mSocket = ms.getSocket();
         View view = inflater.inflate(R.layout.activity_db, null);
-        ListView listView = (ListView) view.findViewById(R.id.lvdb);
+        final ListView listView = (ListView) view.findViewById(R.id.lvdb);
+        btnRefesh = (Button) view.findViewById(R.id.btnRefesh);
 
         Intent intent = getActivity().getIntent();
         final String username = intent.getStringExtra("username");
         Log.d("hquserM2",username);
 
 
-
-//        final ArrayList<DBUser> mangUser = new ArrayList<DBUser>();
-
-//        final ArrayList<String> mangUser = new ArrayList<String>();
-//        mangUser.add("aaaa");
-//        mangUser.add("bbbb");
-//        mangUser.add("cccc");
-//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
-//                android.R.layout.simple_dropdown_item_1line, mangUser);
-//        listView.setAdapter(arrayAdapter);
-
-        final List<DBUser> list = new ArrayList<DBUser>();
-//        DBUser vietnam = new DBUser("aaaa", "vn", count);
-//        DBUser usa = new DBUser("bbbb", "us", 320000000);
-//        DBUser russia = new DBUser("cccc", "ru", 142000000);
-
-
-//        list.add(vietnam);
-//        list.add(usa);
-//        list.add(russia);
+        final List<DBUser> mangUser = new ArrayList<DBUser>();
 
 
         JSONObject data = null;
@@ -74,6 +59,9 @@ public class MFragment1 extends Fragment {
             e.printStackTrace();
         }
         Log.d("hqusercheckfriend", String.valueOf(data));
+
+
+
         mSocket.emit("CHECK_FRIENDS", data);
 
         mSocket.on("SERVER_RETURN_FRIENDS", new Emitter.Listener() {
@@ -87,7 +75,7 @@ public class MFragment1 extends Fragment {
                         String mang[] = chuoi.split(",");
 //                        Log.d("hquserchuoifriend",)
                         for (int i = 0; i < mang.length; i++) {
-                            list.add(new DBUser(mang[i].toString().trim()));
+                            mangUser.add(new DBUser(mang[i].toString().trim()));
                         }
                     }
                 });
@@ -96,8 +84,39 @@ public class MFragment1 extends Fragment {
 
 
 
-        final List<DBUser> mangUser = list;
+//        final List<DBUser> mangUser = list;
         listView.setAdapter(new CustomListAdapter(this.getContext(), mangUser));
+
+        final JSONObject finalData = data;
+        btnRefesh.setOnClickListener(new View.OnClickListener()
+        {
+
+
+            @Override
+            public void onClick(View v)
+            {
+                mSocket.emit("CHECK_FRIENDS", finalData);
+
+                mSocket.on("SERVER_RETURN_FRIENDS", new Emitter.Listener() {
+                    @Override
+                    public void call(final Object... args) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String chuoi =  args[0].toString();
+                                Log.d("hqusermangfriend", chuoi);
+                                String mang[] = chuoi.split(",");
+//                        Log.d("hquserchuoifriend",)
+                                for (int i = 0; i < mang.length; i++) {
+                                    mangUser.add(new DBUser(mang[i].toString().trim()));
+                                }
+                            }
+                        });
+                    }
+                });
+                listView.setAdapter(new CustomListAdapter(getView().getContext(), mangUser));
+            }
+        });
 
         mSocket.on("RECEIVE_NEW_MESSAGE", new Emitter.Listener() {
             @Override
@@ -135,6 +154,8 @@ public class MFragment1 extends Fragment {
             }
         });
         return view;
+
+
     }
 
     private List<DBUser> getListData() {
