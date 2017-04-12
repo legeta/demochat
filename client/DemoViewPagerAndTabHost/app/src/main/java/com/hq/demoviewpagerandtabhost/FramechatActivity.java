@@ -35,6 +35,7 @@ public class FramechatActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         final String username = intent.getStringExtra("chatto");
+        final String myusername = intent.getStringExtra("myuser");
 
         MSocket ms = (MSocket) getApplication();
         mSocket = ms.getSocket();
@@ -48,6 +49,44 @@ public class FramechatActivity extends AppCompatActivity {
         edtChat = (EditText) findViewById(R.id.edtChat);
         btnSend = (Button) findViewById(R.id.btnSendChat);
 
+
+        JSONObject pro = null;
+        try {
+            pro = new JSONObject("{\"username1\": \"" + username + "\",\"username2\": \"" + myusername + "\"}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        mSocket.emit("CHECK_MESSAGE_OFF", pro);
+
+        mSocket.on("SERVER_RETURN_MESSOFF", new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        String message, user1, user2;
+                        try {
+                            message = data.getString("message");
+                            user1 = data.getString("username1");
+                            user2 = data.getString("username2");
+                        } catch (JSONException e) {
+                            return;
+                        }
+//                        if (username.equals(user1)){
+//                            txtFramechat.setText(txtFramechat.getText()+"\n"+user1.toString()+": "+message);
+//                            txtFramechat.setText(txtFramechat.getText()+"\n"+message);
+//                        }
+//                        if (username.equals(user2)){
+//                            txtFramechat.setText(txtFramechat.getText()+"\n"+user2.toString()+": "+message);
+//                        }
+                        txtFramechat.setText(txtFramechat.getText()+"\n"+message);
+                    }
+                });
+            }
+
+        });
 
         mSocket.on("RECEIVE_NEW_MESSAGE", new Emitter.Listener() {
             @Override
@@ -67,6 +106,31 @@ public class FramechatActivity extends AppCompatActivity {
                             return;
                         }
                         txtFramechat.setText(txtFramechat.getText()+"\n"+usersend.toString()+": "+message);
+                    }
+                });
+            }
+
+        });
+
+        mSocket.on("SERVER_INSERT_OFFLINE_MESS", new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        String myusername, usersend, message;
+                        try {
+                            message = data.getString("mess");
+                            usersend = data.getString("usersend");
+                            myusername = data.getString("myusername");
+//
+                            Log.d("hqusermess", data.getString("mess"));
+                            Log.d("hqUsersend", data.getString("usersend"));
+                        } catch (JSONException e) {
+                            return;
+                        }
+                        Toast.makeText(getApplicationContext(), "You - "+myusername+" have send to "+usersend+" off", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

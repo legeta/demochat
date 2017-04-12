@@ -153,7 +153,7 @@ public class MFragment1 extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 String ten = mangUser.get(position).getUsername();
-                ChuyenTrang(ten);
+                ChuyenTrang(ten, username);
                 Toast.makeText(getActivity(), ten, Toast.LENGTH_SHORT).show();
             }
         });
@@ -226,9 +226,10 @@ public class MFragment1 extends Fragment {
         return view;
     }
 
-    public void ChuyenTrang(String ten) {
+    public void ChuyenTrang(String nguoinhan, String nguoigui) {
         Intent intent = new Intent(getActivity(), FramechatActivity.class);
-        intent.putExtra("chatto",ten);
+        intent.putExtra("chatto",nguoinhan);
+        intent.putExtra("myuser",nguoigui);
         getActivity().startActivity(intent);
     }
 }

@@ -6,7 +6,7 @@ let io = require('socket.io').listen(server);//2
 let fs = require('fs');
 let arrUsername = require('./socketController/arrUsername.js');
 let arrSocket = require('./socketController/arrSocket.js');
-let { checkUser, insertUser } = require('./db.js');
+let { checkUser, insertUser, insertOffMess, checkUserExist, UpdateOffMess, checkMessOff } = require('./db.js');
 
 server.listen(process.env.PORT || 3000, () => console.log('Server started'));//3
 
@@ -45,6 +45,7 @@ io.on('connection', socket => {
   socket.on('CHECK_FRIENDS', require('./socketController/checkAllfriends.js')(io, socket));
   socket.on('CHECK_PROFILE', require('./socketController/checkAllProfile.js')(io, socket));
   socket.on('DELETE_FRIENDS', require('./socketController/deletefriends.js')(io, socket));
+  socket.on('CHECK_MESSAGE_OFF', require('./socketController/checkmessoff.js')(io, socket));
   // socket.on('CHECK_ONLINE', require('./socketController/listonline.js')(io, socket));
 
   let mangOnline = '';
@@ -65,14 +66,38 @@ io.on('connection', socket => {
   });
   socket.on('CLIENT_SEND_MESSAGE', data => {
     let desSocket = arrSocket.find(soc => soc.username === data.des);
+    let mess = data.msg;
+    let usersend = data.des+'';
+    let myusername = socket.username+'';
+    console.log('myuser: '+myusername+' usernhan: '+usersend);
     if (desSocket) {
       // let mess = socket.username + ': ' + data.msg;
-      let mess = data.msg;
-      let usersend = data.des;
       console.log('mess_send:' + mess);
       desSocket.emit('RECEIVE_NEW_MESSAGE', { mess, usersend });
-    } else {
-      socket.emit('ERROR_USER');
+    }else {
+      // socket.emit('ERROR_USER');
+      let messa = myusername + ': ' + data.msg;
+      insertOffMess(myusername, usersend, messa, (err, result) => {
+        let loiInsertF = err + '';
+        console.log('LoiIn: ' + loiInsertF);
+        if (loiInsertF === 'error: duplicate key value violates unique constraint "Offline_message_pkey"') {
+          checkMessOff(myusername, usersend, (err, result) => {
+            let msg = result.rows[0].message;
+            let newmsg = msg + '\n' + messa;
+            UpdateOffMess(myusername, usersend, newmsg, (err, result) => {
+              let loiUpMess = err + '';
+              console.log('loiUpMess: ' + loiUpMess);
+              if (err) return socket.emit('SERVER_ERR', loiInsertF);
+              if (result.rowCount != 1) return socket.emit('SERVER_RETURN_ERR', 'Không thành công');
+            });
+        });
+        } else {
+          if (err) return socket.emit('SERVER_ERR', loiInsertF);
+          if (result.rowCount != 1) return socket.emit('SERVER_RETURN_ERR', 'Không thành công');
+        }
+        socket.emit('SERVER_INSERT_OFFLINE_MESS', { myusername, usersend, mess });
+        console.log(myusername + ' send to ' + usersend + ' Offline_message: ' + mess);
+      });
     }
     // console.log(data);
   });

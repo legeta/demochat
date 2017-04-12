@@ -104,7 +104,7 @@ function checkAllFriends(username, cb) {
   //   // return (result);
   //   // cb(undefined);
   // });
-};
+}
 
 function checkAllProfile(username, cb) {
   let sql = `SELECT * FROM "User" WHERE username = $1`;
@@ -120,4 +120,24 @@ function deleteFriends(username1, username2, cb) {
   });
 }
 
-module.exports = { checkUser, insertUser, checkSignup, insertFriends, checkUserExist, updatePass, checkUserPass, checkAllFriends, updateProfile, checkAllProfile, deleteFriends };
+let insertOffMess = (username1, username2, message, cb) => {
+  let sql = `INSERT INTO public."Offline_message"(username1, username2, message)
+	VALUES ($1, $2, $3)`;
+  query(sql, [username1, username2, message], cb);
+}
+
+let UpdateOffMess = (username1, username2, message, cb) => {
+  let sql = `UPDATE public."Offline_message"
+	SET message = $3
+	WHERE (username1 = $1 AND username2 = $2) OR (username1 = $2 AND username2 = $1);`;
+  query(sql, [username1, username2, message], cb);
+}
+
+function checkMessOff(username1, username2, cb) {
+  let sql = `SELECT * FROM "Offline_message" WHERE (username1 = $1 AND username2 = $2) OR (username1 = $2 AND username2 = $1)`;
+  query(sql, [username1, username2], (err, result) => {
+    cb(undefined, result);
+  });
+}
+
+module.exports = { checkUser, insertUser, checkSignup, insertFriends, checkUserExist, updatePass, checkUserPass, checkAllFriends, updateProfile, checkAllProfile, deleteFriends, insertOffMess, UpdateOffMess, checkMessOff };
