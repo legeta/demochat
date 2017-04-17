@@ -136,6 +136,7 @@ let UpdateOffMess = (username1, username2, message, cb) => {
 function checkMessOff(username1, username2, cb) {
   let sql = `SELECT * FROM "Offline_message" WHERE (username1 = $1 AND username2 = $2) OR (username1 = $2 AND username2 = $1)`;
   query(sql, [username1, username2], (err, result) => {
+    if (result.rowCount != 1) return cb(new Error('No message offline'));
     cb(undefined, result);
   });
 }

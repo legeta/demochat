@@ -58,6 +58,7 @@ io.on('connection', socket => {
     }
   }
   socket.emit('LIST_ONLINE_USER', mangOnline);
+
   socket.on('disconnect', () => {
     io.emit('USER_DISCONNECTED', socket.username);
     console.log(arrUsername);
